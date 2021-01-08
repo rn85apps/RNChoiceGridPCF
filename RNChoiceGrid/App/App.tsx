@@ -2,7 +2,7 @@ import * as React from "react";
 import { IInputs } from "../generated/ManifestTypes";
 import { useOptions } from "./Hooks/useOptions";
 import Row from "./Components/Row";
-import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
+import { initializeIcons} from "@fluentui/react/lib/Icons"
 import DataSetInterfaces = ComponentFramework.PropertyHelper.DataSetApi;
 import { useInputValue } from "./Hooks/useInputValue";
 
