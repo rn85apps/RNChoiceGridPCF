@@ -1,0 +1,79 @@
+.RN\.RNChoiceGrid * {
+	box-sizing: border-box;
+}
+
+.RN\.RNChoiceGrid .rn-grid {
+	text-align: left;
+	flex-grow: 1;
+	flex-direction: column;
+	padding: 0;
+	margin: 0;
+	overflow-y: auto;
+	overflow-x: auto;
+	min-height: 100px;
+	max-height: 325px;
+	position: relative;
+	width: 100%;
+}
+
+.RN\.RNChoiceGrid table {
+	display: grid;
+	border-collapse: collapse;
+	min-width: 100%;
+	grid-template-columns: minmax(75px, 1.33fr) minmax(75px, 1fr) minmax(
+			75px,
+			1fr
+		);
+
+	text-align: left;
+}
+
+.RN\.RNChoiceGrid thead,
+.RN\.RNChoiceGrid tbody,
+.RN\.RNChoiceGrid tr {
+	/* lets the TH and TD elements in the table be direct children of the table to use the grid display*/
+	display: contents;
+}
+
+.RN\.RNChoiceGrid tbody tr td {
+	box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.4);
+}
+
+.RN\.RNChoiceGrid th,
+.RN\.RNChoiceGrid td {
+	padding-left: 21px;
+	padding-right: 10px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.RN\.RNChoiceGrid th {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	position: -webkit-sticky;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background: white;
+	font-weight: normal;
+	font-size: 0.9rem;
+	color: rgb(68, 68, 68);
+	box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.RN\.RNChoiceGrid th:last-child {
+	border: 0;
+}
+
+.RN\.RNChoiceGrid td {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	color: rgb(0, 0, 0);
+	font-size: 1rem;
+	text-align: left;
+}
+
+.RN\.RNChoiceGrid .rn-unsaved-changes-msg {
+	font-size: 0.8rem;
+}
