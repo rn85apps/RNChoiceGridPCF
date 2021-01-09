@@ -2,7 +2,7 @@ import * as React from "react";
 import { IInputs } from "../generated/ManifestTypes";
 import { useOptions } from "./Hooks/useOptions";
 import Row from "./Components/Row";
-import { initializeIcons} from "@fluentui/react/lib/Icons"
+import { initializeIcons } from "@fluentui/react/lib/Icons";
 import DataSetInterfaces = ComponentFramework.PropertyHelper.DataSetApi;
 import { useInputValue } from "./Hooks/useInputValue";
 
@@ -12,6 +12,7 @@ export interface IProps {
 	context: ComponentFramework.Context<IInputs>;
 	columns: DataSetInterfaces.Column[];
 	target: string;
+	requireInputForOption: number | null;
 }
 
 //////////////////////////////
@@ -20,13 +21,14 @@ export interface IProps {
 
 export const App: React.FC<IProps> = (props) => {
 	// destructure the props
-	const { context, columns, target } = props;
+	const { context, columns, target, requireInputForOption } = props;
 
 	/** custom hook for option set metadata */
-	const options = useOptions({
+	const { options, requiredOption } = useOptions({
 		columnName: columns[1].name,
 		target,
 		utils: context.utils,
+		requireInputForOption,
 	});
 
 	/** memomized value of the input column's datatype */
@@ -36,7 +38,9 @@ export const App: React.FC<IProps> = (props) => {
 
 	const recordIds = context.parameters.dataset.sortedRecordIds;
 
-	console.log("rendering App");
+	////////////////////////////////////////////////////////////
+	//  RENDERING
+	////////////////////////////////////////////////////////////
 
 	if (context.parameters.dataset.loading) {
 		return <>Loading ...</>;
@@ -69,6 +73,7 @@ export const App: React.FC<IProps> = (props) => {
 								columns={columns}
 								key={recordId}
 								target={target}
+								choiceRequiresInput={requiredOption}
 							/>
 						))}
 					</tbody>

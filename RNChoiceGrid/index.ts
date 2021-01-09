@@ -63,10 +63,15 @@ export class RNChoiceGrid
 			(alias) => columnsOnView[aliases.indexOf(alias)]
 		);
 
+		// determine if the input field should be required on a specific option set value
+		// determine if the input field should be required on a specific option set value
+		const requireInputForOption = context.parameters.requireInputOn.raw;
+		
 		const props: IProps = {
 			context: context,
 			columns: propertySetColumns,
 			target: context.parameters.dataset.getTargetEntityType(),
+			requireInputForOption,
 		};
 
 		ReactDOM.render(React.createElement(App, props), this._container);

@@ -17,6 +17,7 @@ interface IRowProps {
 	recordId: string;
 	inputValueType: string;
 	target: string;
+	choiceRequiresInput: ComponentFramework.PropertyHelper.OptionMetadata | null;
 }
 
 const Row: React.FunctionComponent<IRowProps> = (props) => {
@@ -27,6 +28,7 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 		recordId,
 		inputValueType,
 		target,
+		choiceRequiresInput,
 	} = props;
 
 	/** The state of the row.  If dirty, the save should appear. */
@@ -95,6 +97,12 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 		[updateInputValue, isDirty]
 	);
 
+	////////////////////////////////////////////////////////////////////////////
+	//// HANDLING DATE VALUES FOR DATE ONLY FIELDS
+	////////////////////////////////////////////////////////////////////////////
+
+// https://develop1.net/public/post/2020/05/11/pcf-datetimes-the-saga-continues
+
 	/** event handler for save button.  uses PCF web API */
 	const onSave = () => {
 		console.log("Saving with WebAPI");
@@ -107,9 +115,23 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 
 				const option = options[optionIndex];
 
+				let inpVal;
+
+				if (inputValueType === "DateAndTime.DateOnly") {
+					// speical exception for the date only fields.
+					if (inputValue) {
+						inpVal = context.formatting.formatDateAsFilterStringInUTC(
+							inputValue as Date
+						);
+					}
+				} else {
+					// For other input types, use the stored value.
+					inpVal = inputValue;
+				}
+
 				const data = {
 					[columns[1].name]: option.Value,
-					[columns[2].name]: inputValue,
+					[columns[2].name]: inpVal,
 				};
 
 				console.log("webAPI data", data);
@@ -127,6 +149,7 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 				setIsDirty(false);
 			} catch (error) {
 				alert(error.message);
+
 				console.log(error.message);
 			}
 		}
@@ -134,15 +157,22 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 		executeUpdate();
 	};
 
-	const inputValueBlank = () => {
-		if (typeof inputValue === "string") {
-			return !!inputValue.trim();
-		} else {
-			return !!inputValue;
-		}
-	};
+	const inputValueContainsData =
+		inputValue === "" ||
+		typeof inputValue === null ||
+		typeof inputValue === undefined
+			? false
+			: true;
 
-	const enableSave = !!optionSetValue && inputValueBlank();
+	//const enableSave = !!optionSetValue && inputValueBlank();
+
+	// never enable save if the optionset value is blank.  If the selected choice requires an input, don't enable save if there is no input value; otherwise, enable save.
+	const enableSave = !optionSetValue
+		? false
+		: choiceRequiresInput != null &&
+		  choiceRequiresInput.Label === optionSetValue
+		? inputValueContainsData
+		: true;
 
 	return (
 		<>
@@ -195,7 +225,7 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 							Unsaved changes
 						</span>
 					</td>
-					<td></td>
+					<td>{inputValueContainsData ? "true" : "false"}</td>
 					<td>
 						<DefaultButton
 							text="Save"

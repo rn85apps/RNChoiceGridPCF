@@ -5,16 +5,28 @@ interface IUseOptions {
 	columnName: string;
 	target: string;
 	utils: ComponentFramework.Utility;
+	requireInputForOption: number | null;
 }
 
 export const useOptions = ({
 	columnName,
 	target,
 	utils,
-}: IUseOptions): ComponentFramework.PropertyHelper.OptionMetadata[] => {
+	requireInputForOption
+}: IUseOptions): {
+    options: ComponentFramework.PropertyHelper.OptionMetadata[];
+    requiredOption: ComponentFramework.PropertyHelper.OptionMetadata | null;
+} => {
 	const [options, setOptions] = React.useState<
 		Array<ComponentFramework.PropertyHelper.OptionMetadata>
 	>([]);
+
+	const [
+		requiredOption,
+		setRequiredOption,
+	] = React.useState<ComponentFramework.PropertyHelper.OptionMetadata | null>(
+		null
+	);
 
 	/**
 	 * Side effect that manages the state of the optionset metadata consumed by the component
@@ -54,5 +66,32 @@ export const useOptions = ({
 		};
 	}, [columnName, target, utils]);
 
-	return options;
+
+	/**
+	 * Side effect that manages the state of the option that requires an input, if configured.
+	 */
+	React.useEffect(() => {
+		let cancel = false;
+
+		const option = () => {
+			if (requireInputForOption && requireInputForOption != null) {
+				const index = options
+					.map((option) => option.Value)
+					.indexOf(requireInputForOption);
+				return options[index];
+			}
+
+			return null;
+		};
+
+		if (!cancel) {
+			setRequiredOption(option);
+		}
+
+		return () => {
+			cancel = true;
+		};
+	}, [options, requireInputForOption]);
+
+	return {options, requiredOption};
 };

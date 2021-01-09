@@ -33,6 +33,7 @@
       <property-set name="optionSetColumn" display-name-key="Option Set Column" description-key="Option Set column" of-type="OptionSet" usage="bound" required="true" />
       <property-set name="inputColumn" display-name-key="Input Column" description-key="Column for providing an input" of-type-group="SupportedColumns" usage="bound" required="true" />
     </data-set>
+    <property name="requireInputOn" display-name-key="Require Input on Option Value" description-key="Enter the numeric value of the option set choice that requires a value.  When the choice is selected, save will not enable for the row unless the input column has a value." of-type="Whole.None" usage="input" required="false"/>
     <resources>
       <code path="index.ts" order="1"/>
       <css path="css/RNChoiceGrid.css" order="1" />
