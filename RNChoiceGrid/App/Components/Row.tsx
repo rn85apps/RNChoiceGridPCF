@@ -16,21 +16,21 @@ interface IRowProps {
 	columns: DataSetInterfaces.Column[];
 	recordId: string;
 	inputValueType: string;
+	isDateUserLocal: boolean;
 	target: string;
 	choiceRequiresInput: ComponentFramework.PropertyHelper.OptionMetadata | null;
 }
 
-const Row: React.FunctionComponent<IRowProps> = (props) => {
-	const {
-		context,
-		options,
-		columns,
-		recordId,
-		inputValueType,
-		target,
-		choiceRequiresInput,
-	} = props;
-
+const Row: React.FunctionComponent<IRowProps> = ({
+	context,
+	options,
+	columns,
+	recordId,
+	inputValueType,
+	isDateUserLocal,
+	target,
+	choiceRequiresInput,
+}: IRowProps) => {
 	/** The state of the row.  If dirty, the save should appear. */
 	const [isDirty, setIsDirty] = React.useState<boolean>(false);
 
@@ -46,7 +46,15 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 		context,
 		recordId,
 		columns,
-		inputValueType
+		inputValueType,
+		isDateUserLocal
+	);
+
+	/** determines if the save button should be enabled or disabled */
+	const enableSave = setEnableSave(
+		inputValue,
+		optionSetValue,
+		choiceRequiresInput
 	);
 
 	/** event handler for option set changes */
@@ -58,7 +66,6 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 			const selectedOptionKey = option ? option.key : undefined;
 
 			if (typeof selectedOptionKey === "number") {
-				console.log(selectedOptionKey);
 				const optIndex = options
 					.map((opt) => opt.Value)
 					.indexOf(selectedOptionKey);
@@ -75,16 +82,19 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 	);
 
 	/** event handler for date input changes */
-	const onSelectDate = React.useCallback(
+	const onInputDateBoxChange = React.useCallback(
 		(date: Date | null | undefined) => {
 			updateInputValue(date);
-			setIsDirty(true);
+
+			if (!isDirty) {
+				setIsDirty(true);
+			}
 		},
-		[updateInputValue]
+		[updateInputValue, isDirty]
 	);
 
 	/** event handler for TextBox or NumberBox changes */
-	const onInputChange = React.useCallback(
+	const onInputTextBoxChange = React.useCallback(
 		(
 			event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
 			newValue?: string | undefined
@@ -97,44 +107,30 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 		[updateInputValue, isDirty]
 	);
 
-	////////////////////////////////////////////////////////////////////////////
-	//// HANDLING DATE VALUES FOR DATE ONLY FIELDS
-	////////////////////////////////////////////////////////////////////////////
-
-// https://develop1.net/public/post/2020/05/11/pcf-datetimes-the-saga-continues
-
 	/** event handler for save button.  uses PCF web API */
 	const onSave = () => {
-		console.log("Saving with WebAPI");
-
 		async function executeUpdate() {
 			try {
 				const optionIndex = options
 					.map((option) => option.Label)
 					.indexOf(optionSetValue);
 
-				const option = options[optionIndex];
+				const optVal = options[optionIndex].Value;
 
-				let inpVal;
+				const isDateOnlyNotLocal =
+					inputValueType === "DateAndTime.DateOnly" &&
+					!isDateUserLocal;
 
-				if (inputValueType === "DateAndTime.DateOnly") {
-					// speical exception for the date only fields.
-					if (inputValue) {
-						inpVal = context.formatting.formatDateAsFilterStringInUTC(
+				const inpVal = !isDateOnlyNotLocal
+					? inputValue
+					: context.formatting.formatDateAsFilterStringInUTC(
 							inputValue as Date
-						);
-					}
-				} else {
-					// For other input types, use the stored value.
-					inpVal = inputValue;
-				}
+					  );
 
 				const data = {
-					[columns[1].name]: option.Value,
+					[columns[1].name]: optVal,
 					[columns[2].name]: inpVal,
 				};
-
-				console.log("webAPI data", data);
 
 				const response = await context.webAPI.updateRecord(
 					target,
@@ -157,23 +153,6 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 		executeUpdate();
 	};
 
-	const inputValueContainsData =
-		inputValue === "" ||
-		typeof inputValue === null ||
-		typeof inputValue === undefined
-			? false
-			: true;
-
-	//const enableSave = !!optionSetValue && inputValueBlank();
-
-	// never enable save if the optionset value is blank.  If the selected choice requires an input, don't enable save if there is no input value; otherwise, enable save.
-	const enableSave = !optionSetValue
-		? false
-		: choiceRequiresInput != null &&
-		  choiceRequiresInput.Label === optionSetValue
-		? inputValueContainsData
-		: true;
-
 	return (
 		<>
 			<tr>
@@ -195,25 +174,25 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 					{inputValueType === "DateAndTime.DateOnly" && (
 						<DateBox
 							inputValue={inputValue as Date}
-							onSelectDate={onSelectDate}
+							onSelectDate={onInputDateBoxChange}
 						/>
 					)}
 					{inputValueType === "DateAndTime.DateAndTime" && (
 						<DateBox
 							inputValue={inputValue as Date}
-							onSelectDate={onSelectDate}
+							onSelectDate={onInputDateBoxChange}
 						/>
 					)}
 					{inputValueType === "SingleLine.Text" && (
 						<TextBox
 							inputValue={inputValue as string}
-							onChange={onInputChange}
+							onChange={onInputTextBoxChange}
 						/>
 					)}
 					{inputValueType === "Whole.None" && (
 						<NumberBox
 							inputValue={inputValue as string}
-							onChange={onInputChange}
+							onChange={onInputTextBoxChange}
 						/>
 					)}
 				</td>
@@ -225,7 +204,7 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 							Unsaved changes
 						</span>
 					</td>
-					<td>{inputValueContainsData ? "true" : "false"}</td>
+					<td></td>
 					<td>
 						<DefaultButton
 							text="Save"
@@ -240,3 +219,29 @@ const Row: React.FunctionComponent<IRowProps> = (props) => {
 };
 
 export default React.memo(Row);
+
+/** Determines if the save button should be enabled. */
+function setEnableSave(
+	inputValue: string | Date | null | undefined,
+	optionSetValue: string,
+	choiceRequiresInput: ComponentFramework.PropertyHelper.OptionMetadata | null
+) {
+	const inputValueEmptyString =
+		typeof inputValue === "string" && inputValue.trim() === "";
+
+	const inputValueContainsData =
+		inputValueEmptyString || inputValue === null || inputValue === undefined
+			? false
+			: true;
+
+	// never enable save if the optionset value is blank.
+	// if the selected choice requires an input, don't enable save if there is no input value;
+	// otherwise, enable save.
+	const enableSave = !optionSetValue
+		? false
+		: choiceRequiresInput != null &&
+		  choiceRequiresInput.Label === optionSetValue
+		? inputValueContainsData
+		: true;
+	return enableSave;
+}

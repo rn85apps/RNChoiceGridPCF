@@ -41,16 +41,10 @@ export class RNChoiceGrid
 	public updateView(context: ComponentFramework.Context<IInputs>): void {
 		// Add code to update control view
 
-		if (context.parameters.dataset.paging.hasNextPage) {
-			context.parameters.dataset.paging.loadNextPage();
-			return;
-		}
-
-		const propertySetNames = [
-			"displayColumn",
-			"optionSetColumn",
-			"inputColumn",
-		];
+		// if (context.parameters.dataset.paging.hasNextPage) {
+		// 	context.parameters.dataset.paging.loadNextPage();
+		// 	return;
+		// }
 
 		// columns provided by the PCF
 		const columnsOnView = context.parameters.dataset.columns;
@@ -58,20 +52,18 @@ export class RNChoiceGrid
 		// create an array of the column aliases
 		const aliases = columnsOnView.map((col) => col.alias);
 
-		// create an array of columns that only include the configured property-set columns
-		const propertySetColumns = propertySetNames.map(
-			(alias) => columnsOnView[aliases.indexOf(alias)]
-		);
+		// create an array of columns that only include the configured property-set columns defined in the manifest
+		const propertySetColumns = [
+			"displayColumn",
+			"optionSetColumn",
+			"inputColumn",
+		].map((alias) => columnsOnView[aliases.indexOf(alias)]);
 
-		// determine if the input field should be required on a specific option set value
-		// determine if the input field should be required on a specific option set value
-		const requireInputForOption = context.parameters.requireInputOn.raw;
-		
 		const props: IProps = {
 			context: context,
 			columns: propertySetColumns,
 			target: context.parameters.dataset.getTargetEntityType(),
-			requireInputForOption,
+			requireInputForOption: context.parameters.requireInputOn.raw,
 		};
 
 		ReactDOM.render(React.createElement(App, props), this._container);

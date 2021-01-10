@@ -12,10 +12,10 @@ export const useOptions = ({
 	columnName,
 	target,
 	utils,
-	requireInputForOption
+	requireInputForOption,
 }: IUseOptions): {
-    options: ComponentFramework.PropertyHelper.OptionMetadata[];
-    requiredOption: ComponentFramework.PropertyHelper.OptionMetadata | null;
+	options: ComponentFramework.PropertyHelper.OptionMetadata[];
+	requiredOption: ComponentFramework.PropertyHelper.OptionMetadata | null;
 } => {
 	const [options, setOptions] = React.useState<
 		Array<ComponentFramework.PropertyHelper.OptionMetadata>
@@ -34,8 +34,6 @@ export const useOptions = ({
 	React.useEffect(() => {
 		let cancel = false;
 
-		console.log("executing retrieve options metadata");
-
 		async function executeRetrieveMetadata() {
 			try {
 				const response = await utils.getEntityMetadata(target, [
@@ -44,8 +42,6 @@ export const useOptions = ({
 				const data: ComponentFramework.PropertyHelper.OptionMetadata[] = response.Attributes.get(
 					columnName
 				)?.attributeDescriptor.OptionSet;
-
-				console.table(data);
 
 				if (!cancel) {
 					setOptions(data);
@@ -58,14 +54,12 @@ export const useOptions = ({
 		executeRetrieveMetadata();
 
 		return () => {
-			console.log("Cleaning up useOptions side effect");
 			// Side effect cleanup function will run when
 			// 1. The component unmounts
 			// 2. The dependent property for the effect changes
 			cancel = true;
 		};
 	}, [columnName, target, utils]);
-
 
 	/**
 	 * Side effect that manages the state of the option that requires an input, if configured.
@@ -89,9 +83,12 @@ export const useOptions = ({
 		}
 
 		return () => {
+			// Side effect cleanup function will run when
+			// 1. The component unmounts
+			// 2. The dependent property for the effect changes
 			cancel = true;
 		};
 	}, [options, requireInputForOption]);
 
-	return {options, requiredOption};
+	return { options, requiredOption };
 };

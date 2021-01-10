@@ -5,10 +5,6 @@ import { TextField } from "@fluentui/react/lib/TextField";
 // Configuration of Fluent UI TextField
 //////////////////////////////////////////////////////////////////////
 
-// const maskFormat: { [key: string]: RegExp } = {
-// 	"*": /[0-9]|\./,
-// };
-
 const isANumber = (n: string) => {
 	var numStr = /^-?(\d+\.?\d*)$|(\d*\.?\d+)$/;
 	return numStr.test(n.toString());
@@ -33,7 +29,6 @@ interface INumberBoxProps {
 
 const NumberBox: React.FC<INumberBoxProps> = (props) => {
 	const { inputValue, onChange } = props;
-	console.log("rendering number box");
 
 	return (
 		<TextField

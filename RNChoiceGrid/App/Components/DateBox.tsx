@@ -63,12 +63,7 @@ const DayPickerStrings: IDatePickerStrings = {
 const onFormatDate = (date?: Date): string => {
 	return !date
 		? ""
-		: date.getMonth() +
-				1 +
-				"/" +
-				date.getDate() +
-				"/" +
-				(date.getFullYear() % 100);
+		: date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -84,18 +79,16 @@ const DateBox: React.FC<IDateBoxProps> = (props) => {
 	const { inputValue, onSelectDate } = props;
 
 	return (
-		<>
-			<DatePicker
-				isRequired={false}
-				allowTextInput={false}
-				strings={DayPickerStrings}
-				value={inputValue!}
-				ariaLabel={"Select a date"}
-				placeholder="Select a date..."
-				onSelectDate={onSelectDate}
-				formatDate={onFormatDate}
-			/>
-		</>
+		<DatePicker
+			isRequired={false}
+			allowTextInput={false}
+			strings={DayPickerStrings}
+			value={inputValue!}
+			ariaLabel={"Select a date"}
+			placeholder="Select a date..."
+			onSelectDate={onSelectDate}
+			formatDate={onFormatDate}
+		/>
 	);
 };
 
