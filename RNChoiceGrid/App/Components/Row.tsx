@@ -19,7 +19,7 @@ interface IRowProps {
 	isDateUserLocal: boolean;
 	target: string;
 	choiceRequiresInput: ComponentFramework.PropertyHelper.OptionMetadata | null;
-	isDisabled: boolean
+	isDisabled: boolean;
 }
 
 const Row: React.FunctionComponent<IRowProps> = ({
@@ -31,7 +31,7 @@ const Row: React.FunctionComponent<IRowProps> = ({
 	isDateUserLocal,
 	target,
 	choiceRequiresInput,
-	isDisabled
+	isDisabled,
 }: IRowProps) => {
 	/** The state of the row.  If dirty, the save should appear. */
 	const [isDirty, setIsDirty] = React.useState<boolean>(false);
@@ -86,9 +86,8 @@ const Row: React.FunctionComponent<IRowProps> = ({
 	/** event handler for date input changes */
 	const onInputDateBoxChange = React.useCallback(
 		(date: Date | null | undefined) => {
-
-			if(isDisabled){
-				return
+			if (isDisabled) {
+				return;
 			}
 
 			updateInputValue(date);
@@ -106,9 +105,8 @@ const Row: React.FunctionComponent<IRowProps> = ({
 			event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
 			newValue?: string | undefined
 		) => {
-
-			if(isDisabled){
-				return
+			if (isDisabled) {
+				return;
 			}
 			updateInputValue(newValue || "");
 			if (!isDirty) {
@@ -120,9 +118,8 @@ const Row: React.FunctionComponent<IRowProps> = ({
 
 	/** event handler for save button.  uses PCF web API */
 	const onSave = () => {
-
-		if(isDisabled){
-			return
+		if (isDisabled) {
+			return;
 		}
 
 		async function executeUpdate() {
@@ -169,14 +166,28 @@ const Row: React.FunctionComponent<IRowProps> = ({
 		executeUpdate();
 	};
 
+	/** Event handler for clicking the display name */
+	const onDisplayNameClick = () => {
+		const entityReference = context.parameters.dataset.records[
+			recordId
+		].getNamedReference();
+		context.parameters.dataset.openDatasetItem(entityReference);
+	};
+
+	const displayName = context.parameters.dataset.records[
+		recordId
+	].getFormattedValue(columns[0].name);
+
 	return (
 		<>
 			<tr>
 				<td>
-					<span>
-						{context.parameters.dataset.records[
-							recordId
-						].getFormattedValue(columns[0].name)}
+					<span
+						className="rn-display-name"
+						title={displayName}
+						onClick={onDisplayNameClick}
+					>
+						{displayName}
 					</span>
 				</td>
 				<td>

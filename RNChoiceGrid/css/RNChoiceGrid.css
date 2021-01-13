@@ -77,3 +77,15 @@
 .RN\.RNChoiceGrid .rn-unsaved-changes-msg {
 	font-size: 0.8rem;
 }
+
+
+.RN\.RNChoiceGrid .rn-display-name {
+	font-weight: 400;
+	color: rgb(4, 89, 153);
+	cursor: pointer;
+}
+
+.RN\.RNChoiceGrid .rn-display-name:hover {
+	text-decoration: underline;
+	color: rgb(4, 67, 124);
+}
