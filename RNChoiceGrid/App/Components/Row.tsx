@@ -19,6 +19,7 @@ interface IRowProps {
 	isDateUserLocal: boolean;
 	target: string;
 	choiceRequiresInput: ComponentFramework.PropertyHelper.OptionMetadata | null;
+	isDisabled: boolean
 }
 
 const Row: React.FunctionComponent<IRowProps> = ({
@@ -30,6 +31,7 @@ const Row: React.FunctionComponent<IRowProps> = ({
 	isDateUserLocal,
 	target,
 	choiceRequiresInput,
+	isDisabled
 }: IRowProps) => {
 	/** The state of the row.  If dirty, the save should appear. */
 	const [isDirty, setIsDirty] = React.useState<boolean>(false);
@@ -84,13 +86,18 @@ const Row: React.FunctionComponent<IRowProps> = ({
 	/** event handler for date input changes */
 	const onInputDateBoxChange = React.useCallback(
 		(date: Date | null | undefined) => {
+
+			if(isDisabled){
+				return
+			}
+
 			updateInputValue(date);
 
 			if (!isDirty) {
 				setIsDirty(true);
 			}
 		},
-		[updateInputValue, isDirty]
+		[updateInputValue, isDirty, isDisabled]
 	);
 
 	/** event handler for TextBox or NumberBox changes */
@@ -99,16 +106,25 @@ const Row: React.FunctionComponent<IRowProps> = ({
 			event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
 			newValue?: string | undefined
 		) => {
+
+			if(isDisabled){
+				return
+			}
 			updateInputValue(newValue || "");
 			if (!isDirty) {
 				setIsDirty(true);
 			}
 		},
-		[updateInputValue, isDirty]
+		[updateInputValue, isDirty, isDisabled]
 	);
 
 	/** event handler for save button.  uses PCF web API */
 	const onSave = () => {
+
+		if(isDisabled){
+			return
+		}
+
 		async function executeUpdate() {
 			try {
 				const optionIndex = options

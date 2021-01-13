@@ -64,6 +64,7 @@ export class RNChoiceGrid
 			columns: propertySetColumns,
 			target: context.parameters.dataset.getTargetEntityType(),
 			requireInputForOption: context.parameters.requireInputOn.raw,
+			isDisabled: context.mode.isControlDisabled
 		};
 
 		ReactDOM.render(React.createElement(App, props), this._container);

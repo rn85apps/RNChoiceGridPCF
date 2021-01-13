@@ -13,6 +13,7 @@ export interface IProps {
 	columns: DataSetInterfaces.Column[];
 	target: string;
 	requireInputForOption: number | null;
+	isDisabled: boolean;
 }
 
 //////////////////////////////
@@ -21,7 +22,7 @@ export interface IProps {
 
 export const App: React.FC<IProps> = (props) => {
 	// destructure the props
-	const { context, columns, target, requireInputForOption } = props;
+	const { context, columns, target, requireInputForOption, isDisabled } = props;
 
 	/** custom hook for option set metadata */
 	const { options, requiredOption } = useOptions({
@@ -135,6 +136,7 @@ export const App: React.FC<IProps> = (props) => {
 								key={recordId}
 								target={target}
 								choiceRequiresInput={requiredOption}
+								isDisabled={isDisabled}
 							/>
 						))}
 					</tbody>
