@@ -65,6 +65,10 @@ const Row: React.FunctionComponent<IRowProps> = ({
 			event: React.FormEvent<HTMLDivElement>,
 			option: IDropdownOption | undefined
 		) => {
+
+			if (isDisabled) {
+				return;
+			}
 			const selectedOptionKey = option ? option.key : undefined;
 
 			if (typeof selectedOptionKey === "number") {
@@ -80,7 +84,7 @@ const Row: React.FunctionComponent<IRowProps> = ({
 				);
 			}
 		},
-		[options, updateOptionSetValue]
+		[options, updateOptionSetValue, isDisabled]
 	);
 
 	/** event handler for date input changes */
