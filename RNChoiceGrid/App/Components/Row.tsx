@@ -65,7 +65,6 @@ const Row: React.FunctionComponent<IRowProps> = ({
 			event: React.FormEvent<HTMLDivElement>,
 			option: IDropdownOption | undefined
 		) => {
-
 			if (isDisabled) {
 				return;
 			}
@@ -199,6 +198,7 @@ const Row: React.FunctionComponent<IRowProps> = ({
 						value={optionSetValue}
 						options={options}
 						onChange={onOptionSetChange}
+						isDisabled={isDisabled}
 					/>
 				</td>
 				<td>
@@ -206,12 +206,14 @@ const Row: React.FunctionComponent<IRowProps> = ({
 						<DateBox
 							inputValue={inputValue as Date}
 							onSelectDate={onInputDateBoxChange}
+							isDisabled={isDisabled}
 						/>
 					)}
 					{inputValueType === "DateAndTime.DateAndTime" && (
 						<DateBox
 							inputValue={inputValue as Date}
 							onSelectDate={onInputDateBoxChange}
+							isDisabled={isDisabled}
 						/>
 					)}
 					{inputValueType === "SingleLine.Text" && (
@@ -224,6 +226,7 @@ const Row: React.FunctionComponent<IRowProps> = ({
 						<NumberBox
 							inputValue={inputValue as string}
 							onChange={onInputTextBoxChange}
+							isDisabled={isDisabled}
 						/>
 					)}
 				</td>

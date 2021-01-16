@@ -8,6 +8,7 @@ interface IOptionSetProps {
 		event: React.FormEvent<HTMLDivElement>,
 		option?: IDropdownOption | undefined
 	) => void;
+	isDisabled: boolean;
 }
 
 type OptionSetItem = {
@@ -16,7 +17,7 @@ type OptionSetItem = {
 };
 
 const OptionSet: React.FC<IOptionSetProps> = (props) => {
-	const { value, options, onChange } = props;
+	const { value, options, onChange, isDisabled } = props;
 
 	const opts: IDropdownOption[] = options.map((opt) => {
 		const newOption: OptionSetItem = {
@@ -37,6 +38,7 @@ const OptionSet: React.FC<IOptionSetProps> = (props) => {
 					: undefined
 			}
 			onChange={onChange}
+			disabled={isDisabled}
 		/>
 	);
 };

@@ -72,11 +72,12 @@ const onFormatDate = (date?: Date): string => {
 
 interface IDateBoxProps {
 	inputValue?: Date;
+	isDisabled: boolean;
 	onSelectDate: (date: Date | null | undefined) => void;
 }
 
 const DateBox: React.FC<IDateBoxProps> = (props) => {
-	const { inputValue, onSelectDate } = props;
+	const { inputValue, onSelectDate, isDisabled } = props;
 
 	return (
 		<DatePicker
@@ -88,6 +89,7 @@ const DateBox: React.FC<IDateBoxProps> = (props) => {
 			placeholder="Select a date..."
 			onSelectDate={onSelectDate}
 			formatDate={onFormatDate}
+			disabled={isDisabled}
 		/>
 	);
 };

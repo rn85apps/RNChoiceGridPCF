@@ -25,10 +25,11 @@ interface INumberBoxProps {
 		e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
 		newValue?: string
 	) => void;
+	isDisabled: boolean;
 }
 
 const NumberBox: React.FC<INumberBoxProps> = (props) => {
-	const { inputValue, onChange } = props;
+	const { inputValue, onChange, isDisabled } = props;
 
 	return (
 		<TextField
@@ -36,6 +37,7 @@ const NumberBox: React.FC<INumberBoxProps> = (props) => {
 			onGetErrorMessage={getErrorMessage}
 			onChange={onChange}
 			placeholder={"Please enter a value"}
+			disabled={isDisabled}
 		/>
 	);
 };
